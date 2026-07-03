@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Automation Priority Sorter — What should we automate next?</title>
+<title>Automation Priority Sorter. What should we automate next?</title>
 <meta name="description" content="A live triage engine. Submit a manual pain point, Claude scores it in real time, and it joins the open backlog. This is the front door to everything Soumik Chatterjee has shipped.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;1,500&family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -202,7 +202,7 @@ function renderCard(e) {
         </div>
       </div>
       <div class="pain">${escapeHtml(e.painPoint)}</div>
-      <div class="fix"><strong>Fix</strong> — ${escapeHtml(e.fix)} <span class="time">(${escapeHtml(e.timeSaved)})</span></div>
+      <div class="fix"><strong>Fix</strong> ${escapeHtml(e.fix)} <span class="time">(${escapeHtml(e.timeSaved)})</span></div>
       ${link}
     </div>`;
 }
