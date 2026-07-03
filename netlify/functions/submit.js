@@ -3,6 +3,11 @@ const { getStore } = require('@netlify/blobs');
 const DAILY_CAP = parseInt(process.env.DAILY_CAP || '15', 10);
 const MODEL = 'claude-sonnet-4-6';
 
+const BLOBS_CONFIG = {
+  siteID: process.env.NETLIFY_SITE_ID,
+  token: process.env.NETLIFY_BLOBS_TOKEN
+};
+
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'Content-Type',
@@ -41,7 +46,7 @@ exports.handler = async (event) => {
   }
 
   try {
-    const usageStore = getStore('aps-usage');
+    const usageStore = getStore({ name: 'aps-usage', ...BLOBS_CONFIG });
     const today = new Date().toISOString().slice(0, 10);
     const usageKey = `count-${today}`;
     const current = parseInt((await usageStore.get(usageKey)) || '0', 10);
@@ -98,7 +103,7 @@ exports.handler = async (event) => {
       submittedAt: new Date().toISOString()
     };
 
-    const backlogStore = getStore('aps');
+    const backlogStore = getStore({ name: 'aps', ...BLOBS_CONFIG });
     const existingRaw = await backlogStore.get('backlog');
     const backlog = existingRaw ? JSON.parse(existingRaw) : [];
     backlog.unshift(entry);
