@@ -221,9 +221,11 @@ async function loadBacklog() {
   try {
     const resp = await fetch('/.netlify/functions/list');
     const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || 'Could not load the backlog right now.');
     renderBacklog(data.backlog || []);
   } catch (err) {
-    backlogList.innerHTML = '<p class="empty">Could not load the backlog right now.</p>';
+    backlogList.innerHTML = `<p class="empty">${escapeHtml(err.message || 'Could not load the backlog right now.')}</p>`;
+    backlogCount.textContent = 'error';
   }
 }
 

@@ -40,20 +40,20 @@ exports.handler = async (event) => {
     return { statusCode: 400, headers: CORS_HEADERS, body: JSON.stringify({ error: 'Keep it under 1000 characters' }) };
   }
 
-  const usageStore = getStore('aps-usage');
-  const today = new Date().toISOString().slice(0, 10);
-  const usageKey = `count-${today}`;
-  const current = parseInt((await usageStore.get(usageKey)) || '0', 10);
-
-  if (current >= DAILY_CAP) {
-    return {
-      statusCode: 429,
-      headers: CORS_HEADERS,
-      body: JSON.stringify({ error: 'Automation Priority Sorter has hit its free triage limit for today. Check back tomorrow.' })
-    };
-  }
-
   try {
+    const usageStore = getStore('aps-usage');
+    const today = new Date().toISOString().slice(0, 10);
+    const usageKey = `count-${today}`;
+    const current = parseInt((await usageStore.get(usageKey)) || '0', 10);
+
+    if (current >= DAILY_CAP) {
+      return {
+        statusCode: 429,
+        headers: CORS_HEADERS,
+        body: JSON.stringify({ error: 'Automation Priority Sorter has hit its free triage limit for today. Check back tomorrow.' })
+      };
+    }
+
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
