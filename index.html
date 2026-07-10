@@ -5,6 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Automation Priority Sorter. What should we automate next?</title>
 <meta name="description" content="A live triage engine. Submit a manual pain point, Claude scores it in real time, and it joins the open backlog. This is the front door to everything Soumik Chatterjee has shipped.">
+<link rel="canonical" href="https://automation-priority-sorter.netlify.app/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Automation Priority Sorter. What should we automate next?">
+<meta property="og:description" content="A live triage engine. Submit a manual pain point, Claude scores it in real time, and it joins the open backlog. This is the front door to everything Soumik Chatterjee has shipped.">
+<meta property="og:url" content="https://automation-priority-sorter.netlify.app/">
+<meta property="og:image" content="https://cosmik.work/img/cosmikwork_broad_logo.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Automation Priority Sorter. What should we automate next?">
+<meta name="twitter:description" content="A live triage engine. Submit a manual pain point, Claude scores it in real time, and it joins the open backlog. This is the front door to everything Soumik Chatterjee has shipped.">
+<meta name="twitter:image" content="https://cosmik.work/img/cosmikwork_broad_logo.webp">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;1,500&family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -27,6 +37,12 @@
   html,body{background:var(--void);color:var(--off);font-family:var(--font-body);min-height:100vh;}
   a{color:inherit;}
 
+  .skip-link{
+    position:absolute;left:-9999px;top:0;z-index:100;
+    background:var(--violet);color:#fff;padding:12px 20px;
+    font-family:var(--font-mono);font-size:13px;text-decoration:none;border-radius:0 0 8px 0;
+  }
+  .skip-link:focus{left:0;}
   .topbar{
     display:flex;align-items:center;justify-content:space-between;
     padding:20px 32px;border-bottom:1px solid var(--line);
@@ -77,6 +93,9 @@
   button:disabled{opacity:.5;cursor:not-allowed;}
 
   .form-note{font-family:var(--font-mono);font-size:11px;color:var(--off-dim);margin-top:12px;line-height:1.5;}
+  .char-count{font-family:var(--font-mono);font-size:11px;color:var(--off-dim);text-align:right;margin-top:4px;}
+  .char-count.warn{color:var(--amber);}
+  .char-count.over{color:var(--red);}
   .form-msg{font-family:var(--font-mono);font-size:12px;margin-top:12px;color:var(--red);}
   .form-msg.ok{color:var(--green);}
 
@@ -132,11 +151,14 @@
 </head>
 <body>
 
-<div class="topbar">
+<a class="skip-link" href="#main">Skip to content</a>
+
+<nav class="topbar" aria-label="Breadcrumb">
   <a class="brand" href="https://cosmik.work"><strong>cosmik</strong>.work</a>
   <a class="backlink" href="https://cosmik.work/shipped.html">&larr; shipped</a>
-</div>
+</nav>
 
+<main id="main">
 <div class="hero">
   <span class="eyebrow">Shipped · 01 · Automation Priority Sorter</span>
   <h1>What should we <em>automate</em> next?</h1>
@@ -158,7 +180,8 @@
       <option value="General">General</option>
     </select>
   </div>
-  <textarea id="fPain" aria-label="Describe the pain point" placeholder="What's the manual, repetitive, annoying thing eating your week? e.g. I copy the same data between three tools every morning and it takes 40 minutes..."></textarea>
+  <textarea id="fPain" aria-label="Describe the pain point" maxlength="1000" placeholder="What's the manual, repetitive, annoying thing eating your week? e.g. I copy the same data between three tools every morning and it takes 40 minutes..."></textarea>
+  <p class="char-count" id="fPainCount" aria-live="polite">0 / 1000</p>
   <button id="submitBtn">Triage this</button>
   <p class="form-note">Claude scores every submission live: automatability, priority, and estimated time saved. Capped at a daily limit to keep this free to run.</p>
   <p class="form-msg" id="formMsg" aria-live="polite"></p>
@@ -171,6 +194,7 @@
   </div>
   <div id="backlogList"><p class="loading">Loading backlog…</p></div>
 </div>
+</main>
 
 <footer>
   Built by <a href="https://cosmik.work">Soumik Chatterjee</a> · one Netlify Function, no spreadsheet, no inbox
@@ -180,6 +204,12 @@
 const fName = document.getElementById('fName');
 const fDept = document.getElementById('fDept');
 const fPain = document.getElementById('fPain');
+const fPainCount = document.getElementById('fPainCount');
+fPain.addEventListener('input', () => {
+  const n = fPain.value.length;
+  fPainCount.textContent = n + ' / 1000';
+  fPainCount.className = 'char-count' + (n >= 1000 ? ' over' : n >= 900 ? ' warn' : '');
+});
 const submitBtn = document.getElementById('submitBtn');
 const formMsg = document.getElementById('formMsg');
 const backlogList = document.getElementById('backlogList');
