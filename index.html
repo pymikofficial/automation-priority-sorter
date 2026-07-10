@@ -108,6 +108,7 @@
   .backlog-head h2{font-family:var(--font-display);font-size:22px;font-weight:600;}
   .backlog-count{font-family:var(--font-mono);font-size:12px;color:var(--off-dim);}
 
+  #backlogList{list-style:none;margin:0;padding:0;}
   .card{
     background:var(--void-2);border:1px solid var(--line);border-radius:12px;
     padding:20px 22px;margin-bottom:12px;
@@ -193,7 +194,7 @@
     <h2>Open backlog</h2>
     <span class="backlog-count" id="backlogCount">loading…</span>
   </div>
-  <div id="backlogList"><p class="loading">Loading backlog…</p></div>
+  <ul id="backlogList"><li class="loading">Loading backlog…</li></ul>
 </div>
 </main>
 
@@ -206,11 +207,12 @@ const fName = document.getElementById('fName');
 const fDept = document.getElementById('fDept');
 const fPain = document.getElementById('fPain');
 const fPainCount = document.getElementById('fPainCount');
-fPain.addEventListener('input', () => {
+function updatePainCount() {
   const n = fPain.value.length;
   fPainCount.textContent = n + ' / 1000';
   fPainCount.className = 'char-count' + (n >= 1000 ? ' over' : n >= 900 ? ' warn' : '');
-});
+}
+fPain.addEventListener('input', updatePainCount);
 const submitBtn = document.getElementById('submitBtn');
 const formMsg = document.getElementById('formMsg');
 const backlogList = document.getElementById('backlogList');
@@ -223,7 +225,7 @@ function escapeHtml(s) {
 function renderCard(e) {
   const link = e.link ? `<a class="card-link" href="${escapeHtml(e.link)}" target="_blank">${escapeHtml(e.linkLabel || 'View →')}</a>` : '';
   return `
-    <div class="card">
+    <li class="card">
       <div class="card-top">
         <div class="card-who"><strong>${escapeHtml(e.name)}</strong> · ${escapeHtml(e.department)}</div>
         <div class="badges">
@@ -235,12 +237,12 @@ function renderCard(e) {
       <div class="pain">${escapeHtml(e.painPoint)}</div>
       <div class="fix"><strong>Fix</strong> ${escapeHtml(e.fix)} <span class="time">(${escapeHtml(e.timeSaved)})</span></div>
       ${link}
-    </div>`;
+    </li>`;
 }
 
 function renderBacklog(backlog) {
   if (!backlog.length) {
-    backlogList.innerHTML = '<p class="empty">Backlog is empty. Be the first to log a pain point.</p>';
+    backlogList.innerHTML = '<li class="empty">Backlog is empty. Be the first to log a pain point.</li>';
     backlogCount.textContent = '0 items';
     return;
   }
@@ -255,7 +257,7 @@ async function loadBacklog() {
     if (!resp.ok) throw new Error(data.error || 'Could not load the backlog right now.');
     renderBacklog(data.backlog || []);
   } catch (err) {
-    backlogList.innerHTML = `<p class="empty">${escapeHtml(err.message || 'Could not load the backlog right now.')}</p>`;
+    backlogList.innerHTML = `<li class="empty">${escapeHtml(err.message || 'Could not load the backlog right now.')}</li>`;
     backlogCount.textContent = 'error';
   }
 }
@@ -287,6 +289,7 @@ submitBtn.addEventListener('click', async () => {
     if (!resp.ok) throw new Error(data.error || 'Something went wrong');
 
     fPain.value = '';
+    updatePainCount();
     formMsg.textContent = `Triaged: ${data.entry.priority} priority, ${data.entry.rating}/10 automatable. ${data.remainingToday} free triage${data.remainingToday === 1 ? '' : 's'} left today.`;
     formMsg.className = 'form-msg ok';
     loadBacklog();
