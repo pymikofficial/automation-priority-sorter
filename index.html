@@ -146,8 +146,8 @@
 <div class="form-section">
   <span class="form-label">Log a pain point</span>
   <div class="row2">
-    <input type="text" id="fName" placeholder="Your name (or stay anonymous)">
-    <select id="fDept">
+    <input type="text" id="fName" aria-label="Your name (optional)" placeholder="Your name (or stay anonymous)">
+    <select id="fDept" aria-label="Department">
       <option value="Editorial">Editorial</option>
       <option value="Social Impact">Social Impact</option>
       <option value="Journalism">Journalism</option>
@@ -158,10 +158,10 @@
       <option value="General">General</option>
     </select>
   </div>
-  <textarea id="fPain" placeholder="What's the manual, repetitive, annoying thing eating your week? e.g. I copy the same data between three tools every morning and it takes 40 minutes..."></textarea>
+  <textarea id="fPain" aria-label="Describe the pain point" placeholder="What's the manual, repetitive, annoying thing eating your week? e.g. I copy the same data between three tools every morning and it takes 40 minutes..."></textarea>
   <button id="submitBtn">Triage this</button>
   <p class="form-note">Claude scores every submission live: automatability, priority, and estimated time saved. Capped at a daily limit to keep this free to run.</p>
-  <p class="form-msg" id="formMsg"></p>
+  <p class="form-msg" id="formMsg" aria-live="polite"></p>
 </div>
 
 <div class="backlog">
