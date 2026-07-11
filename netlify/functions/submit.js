@@ -120,11 +120,16 @@ exports.handler = async (event) => {
       submittedAt: new Date().toISOString()
     };
 
-    const backlogStore = getStore({ name: 'aps', ...BLOBS_CONFIG });
-    const existingRaw = await backlogStore.get('backlog');
-    const backlog = existingRaw ? JSON.parse(existingRaw) : [];
-    backlog.unshift(entry);
-    await backlogStore.set('backlog', JSON.stringify(backlog.slice(0, 200)));
+    // Reserved department marker for the smoke test: exercises the full
+    // triage + rate-limit path against the real API without ever writing
+    // to the shared public backlog store.
+    if (department !== '__smoketest__') {
+      const backlogStore = getStore({ name: 'aps', ...BLOBS_CONFIG });
+      const existingRaw = await backlogStore.get('backlog');
+      const backlog = existingRaw ? JSON.parse(existingRaw) : [];
+      backlog.unshift(entry);
+      await backlogStore.set('backlog', JSON.stringify(backlog.slice(0, 200)));
+    }
 
     await usageStore.set(usageKey, String(current + 1));
     await usageStore.set(ipUsageKey, String(ipCurrent + 1));
